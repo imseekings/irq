@@ -1,0 +1,191 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Industrial Revolution</title>
+<style>
+:root{--bg:#1a1b1e;--card:#26282c;--ink:#e8e6e1;--mut:#9a9890;--line:#3a3d42;--pri:#b9651f;--acc:#f0a244;color-scheme:dark}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.4 system-ui,-apple-system,"Segoe UI",sans-serif}
+#app{max-width:720px;margin:0 auto;padding:20px 16px 48px}
+h1{font-size:1.6rem;margin:.2em 0 .6em}
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:16px;margin:0 0 14px}
+.row{display:flex;gap:8px;align-items:center;flex-wrap:wrap}.sp{flex:1}
+button,select,input{font:inherit;color:inherit}
+button{border:0;border-radius:10px;padding:11px 18px;cursor:pointer;font-weight:600;background:var(--line)}
+button.pri{background:var(--pri);color:#fff}
+button:disabled{opacity:.45;cursor:default}
+input:not([type=radio]),select{width:100%;padding:10px 12px;border:1px solid var(--line);border-radius:10px;background:var(--bg)}
+select{width:auto}
+textarea{width:100%;padding:10px 12px;border:1px solid var(--line);border-radius:10px;background:var(--bg);color:inherit;font:inherit}
+summary{cursor:pointer}
+.qt{margin:10px 0;font-weight:600}
+.opt{display:flex;align-items:center;gap:8px;margin:6px 0;padding:6px 8px;border-left:6px solid var(--c);border-radius:8px}
+.opt>span{color:var(--c);width:1.2em}
+.big{font-size:3.4rem;font-weight:800;letter-spacing:.15em;text-align:center;margin:8px 0}
+.mut{color:var(--mut)}.c{text-align:center}
+.chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
+.chip{background:var(--line);border-radius:99px;padding:6px 14px;font-weight:600}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.ans{background:var(--c);color:#fff;min-height:96px;font-size:1.1rem;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;text-align:center}
+.ans b{font-size:1.8rem}
+.bar{display:flex;align-items:center;gap:8px;margin:8px 0}
+.bar i{display:block;height:30px;min-width:4px;background:var(--c);border-radius:6px}
+.bar.x{opacity:.45}
+.timer{font-size:2rem;font-weight:800;color:var(--acc)}
+.lb{display:flex;justify-content:space-between;padding:9px 4px;border-bottom:1px solid var(--line)}
+.lb:last-child{border:0}.you{color:var(--acc);font-weight:700}
+.res{font-size:2rem;font-weight:800;text-align:center;margin:12px 0}
+.err{color:#d6336c;margin:8px 0}
+</style></head>
+<body><div id="app"></div>
+<script>
+const $=s=>document.querySelector(s),app=$('#app');
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const COL=['#a8442a','#3f6283','#9a7420','#4a7a62'],SH=['▲','◆','●','■'];
+let S=null,es=null,v=null,deadline=0,sent=-1;
+const post=async(u,b)=>{const r=await fetch(u,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(b)});const j=await r.json();if(!r.ok)throw new Error(j.error||'Error');return j};
+const board=(n)=>v.players.slice(0,n).map((p,i)=>`<div class="lb ${S.role=='player'&&p.name==v.me?.name?'you':''}"><span>${['🥇','🥈','🥉'][i]||(i+1)+'.'} ${esc(p.name)}${p.streak>=3?' <small>🔥'+p.streak+'</small>':''}</span><span>${p.score}</span></div>`).join('');
+
+try{S=JSON.parse(sessionStorage.getItem('quizzy'))}catch(e){}
+S?connect():home();
+
+function home(){
+  if(es)es.close();sessionStorage.removeItem('quizzy');S=null;v=null;
+  app.innerHTML=`<h1>⚙️ Industrial Revolution</h1><div class="grid"><div class="card c"><h2>Host</h2><p class="mut">Write questions and run a live game.</p><button class="pri" id="h">Host a game</button></div>
+  <div class="card c"><h2>Play</h2><p class="mut">Got a game PIN? Jump in.</p><button class="pri" id="j">Join a game</button></div></div>`;
+  $('#h').onclick=()=>setup(draft());$('#j').onclick=joinForm;
+}
+function connect(){
+  sessionStorage.setItem('quizzy',JSON.stringify(S));
+  es=new EventSource('/api/events?pin='+S.pin+'&role='+S.role+'&token='+(S.token||'')+'&id='+(S.id||''));
+  es.onmessage=e=>{v=JSON.parse(e.data);if(v.endsIn!=null)deadline=Date.now()+v.endsIn;render()};
+  es.onerror=()=>{if(es.readyState==2)home()};
+}
+
+/* host setup */
+const blank=()=>({q:'',o:['','','',''],c:0,s:20});
+function draft(){try{const d=JSON.parse(localStorage.getItem('quizzy-draft'));if(d&&d.length)return d}catch(e){}
+  return [{q:'Which planet is closest to the Sun?',o:['Venus','Mercury','Mars','Earth'],c:1,s:20}]}
+const qCard=(q,i)=>`<div class="card qc"><div class="row"><b>Question ${i+1}</b><span class="sp"></span><select class="qs">${[10,20,30,60].map(s=>`<option value="${s}" ${s==q.s?'selected':''}>${s}s</option>`).join('')}</select>${i?`<button class="rm" data-i="${i}">Remove</button>`:''}</div>
+<input class="qt" placeholder="Type your question" value="${esc(q.q)}">
+${[0,1,2,3].map(k=>`<label class="opt" style="--c:${COL[k]}"><input type="radio" name="c${i}" value="${k}" ${k==q.c?'checked':''} title="Correct answer"><span>${SH[k]}</span><input class="qo" placeholder="Answer ${k+1}${k>1?' (optional)':''}" value="${esc(q.o[k]||'')}"></label>`).join('')}</div>`;
+const collect=()=>[...document.querySelectorAll('.qc')].map(d=>({q:d.querySelector('.qt').value.trim(),o:[...d.querySelectorAll('.qo')].map(x=>x.value.trim()),c:+(d.querySelector('input[type=radio]:checked')?.value??0),s:+d.querySelector('.qs').value}));
+/*QL-START*/
+const QL_DELIMS={tab:'\t',comma:',',semi:';',dash:' - '};
+const qlStrip=s=>s.trim().replace(/^"(.*)"$/,'$1').trim();
+function qlParse(text,key){
+  const lines=text.split(/\r?\n/).map(l=>l.trim()).filter(Boolean);
+  const cnt=x=>lines.filter(l=>l.includes(x)).length;
+  const d=key=='auto'?['\t',';',',',' - '].reduce((best,x)=>cnt(x)>cnt(best)?x:best):QL_DELIMS[key];
+  if(key=='auto'&&!cnt(d))return {cards:[],skipped:lines.length,noDelim:true};
+  if(!d)return {cards:[],skipped:lines.length,noDelim:true};
+  const cards=[];
+  for(const l of lines){const i=l.indexOf(d);if(i<0)continue;const a=qlStrip(l.slice(0,i)),b=qlStrip(l.slice(i+d.length));if(a&&b)cards.push([a,b])}
+  return {cards,skipped:lines.length-cards.length};
+}
+const qlShuffle=a=>{a=[...a];for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a};
+function qlBuild(cards,side,secs){
+  const pairs=cards.map(c=>side?[c[1],c[0]]:[c[0],c[1]]).map(([q,a])=>[q.slice(0,300),a.slice(0,120)]);
+  const answers=[...new Set(pairs.map(p=>p[1]))];
+  if(answers.length<2)return null;
+  return pairs.map(([q,a])=>{
+    const opts=qlShuffle([a,...qlShuffle(answers.filter(x=>x!==a)).slice(0,3)]);
+    return {q,o:[...opts,'','',''].slice(0,4),c:opts.indexOf(a),s:secs};
+  });
+}
+const qlClean=s=>s.replace(/[\t\r\n]+/g,' ').trim();
+const qlExport=qs=>qs.filter(q=>q.q&&q.o[q.c]).map(q=>qlClean(q.q)+'\t'+qlClean(q.o[q.c])).join('\n');
+/*QL-END*/
+const qlPanel=`<details class="card" id="ql"><summary><b>Import / export (Quizlet)</b></summary>
+<p class="mut"><small>Import: in Quizlet open a set, use the ⋯ menu → Export, copy the text and paste it below. Each card becomes a multiple-choice question, with wrong answers picked from the other cards. Export: one card per question (question → term, correct answer → definition). Quizlet cards can’t hold wrong answers, so those aren’t exported.</small></p>
+<textarea id="qlText" rows="6" placeholder="One card per line: term, then a tab, then definition"></textarea>
+<div class="row" style="margin:8px 0"><select id="qlDelim"><option value="auto">Separator: auto-detect</option><option value="tab">Tab</option><option value="comma">Comma</option><option value="semi">Semicolon</option><option value="dash">Dash ( - )</option></select><select id="qlSide"><option value="0">Term = question</option><option value="1">Definition = question</option></select><select id="qlTime"><option value="10">10s</option><option value="20" selected>20s</option><option value="30">30s</option><option value="60">60s</option></select></div>
+<label><input type="checkbox" id="qlRep" checked> Replace the questions below</label>
+<div class="err" id="qlMsg"></div>
+<div class="row"><button class="pri" id="qlImp">Import</button><button id="qlExp">Export current</button><button id="qlCopy">Copy</button><button id="qlDl">Download .txt</button></div></details>`;
+function qlBind(note){
+  const msg=(t,ok)=>{const m=$('#qlMsg');m.textContent=t;m.style.color=ok?'#2b8a3e':''};
+  if(note){$('#ql').open=true;msg(note,true)}
+  $('#qlImp').onclick=()=>{
+    const {cards,skipped,noDelim}=qlParse($('#qlText').value,$('#qlDelim').value);
+    if(noDelim)return msg('Couldn’t detect the separator. Pick one from the list.');
+    if(cards.length<2)return msg('Need at least two valid cards (term and definition on the same line).');
+    const qs=qlBuild(cards.slice(0,100),+$('#qlSide').value,+$('#qlTime').value);
+    if(!qs)return msg('Need at least two cards with different answers.');
+    const cur=collect().filter(q=>q.q||q.o.some(Boolean));
+    setup($('#qlRep').checked?qs:cur.concat(qs),`Imported ${qs.length} question${qs.length==1?'':'s'}${skipped?` (${skipped} line${skipped==1?'':'s'} skipped)`:''}${cards.length>100?'; only the first 100 were used':''}. Review them, then create the game.`);
+  };
+  $('#qlExp').onclick=()=>{const t=qlExport(collect());$('#qlText').value=t;msg(t?`Exported ${t.split('\n').length} question(s). In Quizlet: create a set → Import → paste it (tab between term and definition, new line between cards).`:'Nothing to export yet. Fill in a question and mark its correct answer.',!!t)};
+  $('#qlCopy').onclick=()=>{const ta=$('#qlText');if(!ta.value)return msg('Nothing to copy. Use “Export current” first.');ta.select();
+    (navigator.clipboard?navigator.clipboard.writeText(ta.value):Promise.reject()).then(()=>msg('Copied.',true),()=>{document.execCommand('copy');msg('Copied.',true)})};
+  $('#qlDl').onclick=()=>{const t=$('#qlText').value;if(!t)return msg('Nothing to download. Use “Export current” first.');const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([t],{type:'text/plain'}));a.download='industrial-revolution-export.txt';a.click()};
+}
+function setup(qs,note){
+  app.innerHTML=`<h1>Build your quiz</h1><p class="mut">Select the radio button next to the correct answer.</p>${qlPanel}${qs.map(qCard).join('')}<div class="err" id="err"></div><div class="row"><button id="back">Back</button><button id="add">+ Add question</button><span class="sp"></span><button class="pri" id="go">Create game</button></div>`;
+  $('#back').onclick=home;
+  qlBind(note);
+  $('#add').onclick=()=>{const q=collect();q.push(blank());setup(q)};
+  document.querySelectorAll('.rm').forEach(b=>b.onclick=()=>{const q=collect();q.splice(+b.dataset.i,1);setup(q)});
+  $('#go').onclick=async()=>{
+    const raw=collect(),out=[];
+    for(const [i,r] of raw.entries()){
+      const idx=[0,1,2,3].filter(k=>r.o[k]);
+      if(!r.q||idx.length<2||!r.o[r.c])return $('#err').textContent=`Question ${i+1}: add the question text, at least two answers, and mark a filled-in correct answer.`;
+      out.push({q:r.q,o:idx.map(k=>r.o[k]),c:idx.indexOf(r.c),s:r.s});
+    }
+    try{localStorage.setItem('quizzy-draft',JSON.stringify(raw))}catch(e){}
+    try{const r=await post('/api/create',{questions:out});S={role:'host',pin:r.pin,token:r.token};connect()}
+    catch(e){$('#err').textContent=e.message}
+  };
+}
+
+/* player join */
+function joinForm(){
+  app.innerHTML=`<h1>Join a game</h1><div class="card"><input id="pin" inputmode="numeric" placeholder="Game PIN" maxlength="4"><br><br><input id="nm" placeholder="Your nickname" maxlength="20"><div class="err" id="err"></div><br><button class="pri" id="go">Join</button> <button id="back">Back</button></div>`;
+  $('#back').onclick=home;
+  $('#go').onclick=async()=>{
+    try{const pin=$('#pin').value.trim(),r=await post('/api/join',{pin,name:$('#nm').value});S={role:'player',pin,id:r.id};connect()}
+    catch(e){$('#err').textContent=e.message}
+  };
+}
+
+/* views */
+const optsView=(q,counts,correct,n)=>q.options.map((t,k)=>counts
+  ?`<div class="bar ${k==correct?'':'x'}" style="--c:${COL[k]}"><span style="width:1.4em">${SH[k]}</span><i style="width:${Math.round(60*counts[k]/Math.max(1,n))+1}%"></i><span>${counts[k]} · ${esc(t)} ${k==correct?'✓':''}</span></div>`
+  :`<div class="opt" style="--c:${COL[k]}"><span>${SH[k]}</span>${esc(t)}</div>`).join('');
+
+function hostView(){
+  const n=v.players.length;
+  if(v.phase=='lobby')return `<div class="card c"><p class="mut">Players: open this site, choose “Join a game” and enter</p><div class="big">${v.pin}</div><div class="chips">${v.players.map(p=>`<span class="chip">${esc(p.name)}</span>`).join('')||'<span class="mut">Waiting for players…</span>'}</div><p class="mut"><small>Streak bonus: 3 correct in a row ×1.5, 4 ×2, 5 ×2.5, 6+ ×3. A wrong or missed answer resets it.</small></p></div><button class="pri" id="start" ${n?'':'disabled'}>Start (${n} player${n==1?'':'s'})</button>`;
+  if(v.phase=='question')return `<div class="row"><span class="mut">Question ${v.qi+1} of ${v.total}</span><span class="sp"></span><span class="timer" id="t"></span></div><div class="card"><h2>${esc(v.q.text)}</h2>${optsView(v.q)}</div><div class="row"><span class="mut">${v.answered} of ${n} answered</span><span class="sp"></span><button id="skip">Show results</button></div>`;
+  if(v.phase=='reveal')return `<div class="card"><h2>${esc(v.q.text)}</h2>${optsView(v.q,v.counts,v.correct,n)}</div><div class="card"><b>Leaderboard (top 5)</b>${board(5)}</div><button class="pri" id="next">${v.qi+1<v.total?'Next question':'Final results'}</button>`;
+  return `<h1>🏆 Final scoreboard</h1><div class="card"><b>Top 5</b>${board(5)}</div><button class="pri" id="home">Done</button>`;
+}
+function playerView(){
+  const me=v.me;if(!me)return '<div class="card c">Joining…</div>';
+  if(v.phase=='lobby')return `<div class="card c"><h2>You’re in, ${esc(me.name)}!</h2><p class="mut">Waiting for the host to start…</p></div>`;
+  if(v.phase=='question'){
+    if(me.answered||sent==v.qi)return `<div class="card c"><div class="res">✔ Answer locked in</div><p class="mut">Waiting for the results…</p></div>`;
+    return `<div class="row"><span class="mut">Question ${v.qi+1} of ${v.total}</span>${me.streak>=1?`<span class="chip">🔥 ${me.streak} in a row${me.streak>=2?' — next one is bonus!':''}</span>`:''}<span class="sp"></span><span class="timer" id="t"></span></div><div class="card"><h2>${esc(v.q.text)}</h2></div><div class="grid">${v.q.options.map((t,k)=>`<button class="ans" style="--c:${COL[k]}" data-k="${k}"><b>${SH[k]}</b>${esc(t)}</button>`).join('')}</div>`;
+  }
+  if(v.phase=='reveal')return `<div class="card c"><div class="res">${me.correct?'✅ Correct!':me.answered?'❌ Not quite':'⏰ Too slow'}</div>${me.correct?`<p>+${me.points} points${me.mult>1?` <b>🔥 ×${me.mult} streak bonus</b> (${me.streak} in a row)`:me.streak==2?' — one more for a streak bonus!':''}</p>`:`<p class="mut">Answer: ${esc(v.q.options[v.correct])}</p>`}<p><b>${me.score}</b> points · rank <b>#${me.rank}</b> of ${v.players.length}</p></div>`;
+  return `<div class="card c"><h2>Game over</h2><div class="res">#${me.rank} of ${v.players.length}</div><p>${me.score} points</p></div><div class="card"><b>Top 5</b>${board(5)}</div><button class="pri" id="home">Leave</button>`;
+}
+function render(){
+  if(!v)return;
+  const host=S.role=='host';
+  app.innerHTML=host?hostView():playerView();
+  const act=a=>()=>post('/api/host',{pin:S.pin,token:S.token,action:a}).catch(()=>{});
+  $('#start')&&($('#start').onclick=act('start'));
+  $('#skip')&&($('#skip').onclick=act('reveal'));
+  $('#next')&&($('#next').onclick=act('next'));
+  $('#home')&&($('#home').onclick=home);
+  document.querySelectorAll('.ans').forEach(b=>b.onclick=()=>{
+    sent=v.qi;document.querySelectorAll('.ans').forEach(x=>x.disabled=true);
+    post('/api/answer',{pin:S.pin,id:S.id,choice:+b.dataset.k}).catch(()=>{});
+  });
+  tick();
+}
+function tick(){const el=$('#t');if(el&&v&&v.phase=='question')el.textContent=Math.max(0,Math.ceil((deadline-Date.now())/1000))}
+setInterval(tick,250);
+</script></body></html>
