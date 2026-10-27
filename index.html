@@ -3,55 +3,83 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Industrial Revolution</title>
 <style>
-:root{--bg:#1a1b1e;--card:#26282c;--ink:#e8e6e1;--mut:#9a9890;--line:#3a3d42;--pri:#b9651f;--acc:#f0a244;color-scheme:dark}
+:root{--bg:#16181b;--card:#25282d;--ink:#e8e6e1;--mut:#9a9890;--line:#3a3d42;--pri:#b9651f;--acc:#f0a244;color-scheme:dark}
 *{box-sizing:border-box}
-body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.4 system-ui,-apple-system,"Segoe UI",sans-serif}
+body{margin:0;color:var(--ink);font:16px/1.4 system-ui,-apple-system,"Segoe UI",sans-serif;background-color:var(--bg);background-image:linear-gradient(rgba(90,130,170,.08) 1px,transparent 1px),linear-gradient(90deg,rgba(90,130,170,.08) 1px,transparent 1px);background-size:28px 28px}
 #app{max-width:720px;margin:0 auto;padding:20px 16px 48px}
+h1,h2,.big,.timer,.res{font-family:Rockwell,"Rockwell Nova","Roboto Slab","Courier New",serif;letter-spacing:.02em}
 h1{font-size:1.6rem;margin:.2em 0 .6em}
-.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:16px;margin:0 0 14px}
+.card{position:relative;background:linear-gradient(#2b2e34,#22252a);border:2px solid #44484f;border-radius:10px;padding:20px 16px 16px;margin:0 0 14px;box-shadow:inset 0 0 0 1px #15171a,0 3px 0 #101214}
+.card::before,.card::after{content:"";position:absolute;top:6px;width:7px;height:7px;border-radius:50%;background:radial-gradient(circle at 35% 35%,#9a9ea6,#4a4d54)}
+.card::before{left:7px}.card::after{right:7px}
+.gear{display:inline-block;animation:spin 9s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
 .row{display:flex;gap:8px;align-items:center;flex-wrap:wrap}.sp{flex:1}
-button,select,input{font:inherit;color:inherit}
-button{border:0;border-radius:10px;padding:11px 18px;cursor:pointer;font-weight:600;background:var(--line)}
+button,select,input,textarea{font:inherit;color:inherit}
+button{border:0;border-radius:8px;padding:11px 18px;cursor:pointer;font-weight:600;background:#3a3d42;border-bottom:3px solid #1d1f22}
 button.pri{background:var(--pri);color:#fff}
 button:disabled{opacity:.45;cursor:default}
-input:not([type=radio]),select{width:100%;padding:10px 12px;border:1px solid var(--line);border-radius:10px;background:var(--bg)}
+input:not([type=radio]):not([type=checkbox]),select,textarea{width:100%;padding:10px 12px;border:1px solid var(--line);border-radius:8px;background:#1b1d20}
 select{width:auto}
-textarea{width:100%;padding:10px 12px;border:1px solid var(--line);border-radius:10px;background:var(--bg);color:inherit;font:inherit}
 summary{cursor:pointer}
 .qt{margin:10px 0;font-weight:600}
-.opt{display:flex;align-items:center;gap:8px;margin:6px 0;padding:6px 8px;border-left:6px solid var(--c);border-radius:8px}
-.opt>span{color:var(--c);width:1.2em}
+.inl{display:block;margin-top:8px;color:var(--mut);font-size:.9rem}
+.opt{display:flex;align-items:center;gap:8px;margin:6px 0;padding:6px 8px;border-left:6px solid var(--c);border-radius:6px}
+.opt>span{width:1.4em}
 .big{font-size:3.4rem;font-weight:800;letter-spacing:.15em;text-align:center;margin:8px 0}
 .mut{color:var(--mut)}.c{text-align:center}
 .chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
-.chip{background:var(--line);border-radius:99px;padding:6px 14px;font-weight:600}
+.chip{background:#3a3d42;border-radius:99px;padding:6px 14px;font-weight:600}
 .grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
-.ans{background:var(--c);color:#fff;min-height:96px;font-size:1.1rem;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;text-align:center}
+.ans{background:var(--c);color:#fff;min-height:96px;font-size:1.1rem;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;text-align:center;border-bottom:5px solid rgba(0,0,0,.4)}
 .ans b{font-size:1.8rem}
 .bar{display:flex;align-items:center;gap:8px;margin:8px 0}
-.bar i{display:block;height:30px;min-width:4px;background:var(--c);border-radius:6px}
+.bar i{display:block;height:30px;min-width:4px;background:var(--c);border-radius:4px}
 .bar.x{opacity:.45}
 .timer{font-size:2rem;font-weight:800;color:var(--acc)}
-.lb{display:flex;justify-content:space-between;padding:9px 4px;border-bottom:1px solid var(--line)}
+.lb{display:flex;justify-content:space-between;align-items:center;padding:9px 4px;border-bottom:1px solid var(--line)}
 .lb:last-child{border:0}.you{color:var(--acc);font-weight:700}
 .res{font-size:2rem;font-weight:800;text-align:center;margin:12px 0}
-.err{color:#d6336c;margin:8px 0}
+.err{color:#e0698f;margin:8px 0}
+.gauge{position:relative;width:150px;height:75px;margin:6px auto 0;overflow:hidden}
+.dial{width:150px;height:150px;border-radius:50%;background:conic-gradient(from 270deg,#4a7a62 0 60deg,#9a7420 60deg 120deg,#a8442a 120deg 180deg,transparent 180deg);-webkit-mask:radial-gradient(circle,transparent 46px,#000 47px);mask:radial-gradient(circle,transparent 46px,#000 47px)}
+.needle{position:absolute;left:50%;bottom:0;width:4px;height:62px;margin-left:-2px;background:var(--ink);border-radius:2px;transform-origin:50% 100%;transform:rotate(-90deg);transition:transform .9s cubic-bezier(.3,1.5,.5,1)}
+.hub{position:absolute;left:50%;bottom:-9px;width:18px;height:18px;margin-left:-9px;border-radius:50%;background:#9a9ea6}
+.gl{font-size:.9rem;margin:8px 0}
+.pu{display:flex;gap:8px;margin:10px 0}
+.pub{flex:1;font-size:.85rem;padding:8px 4px}
+.pub.on{background:var(--pri);color:#fff}
+.pub:disabled:not(.on){opacity:.35}
+.steam{position:relative;height:0}
+.steam span{position:absolute;bottom:0;font-size:1.6rem;opacity:0;animation:puff 2.6s ease-out infinite}
+.steam span:nth-child(1){left:12%}.steam span:nth-child(2){left:50%;animation-delay:.8s}.steam span:nth-child(3){left:84%;animation-delay:1.5s}
+@keyframes puff{0%{transform:translateY(0) scale(.6);opacity:0}30%{opacity:.8}100%{transform:translateY(-70px) scale(1.5);opacity:0}}
+.race{display:grid;grid-template-columns:84px 1fr;gap:8px;align-items:end;margin-top:10px}
+.rn{font-size:.85rem;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.track{position:relative;height:34px;background:repeating-linear-gradient(90deg,#5a5e66 0 3px,transparent 3px 14px) left bottom/100% 6px no-repeat,linear-gradient(#6b6f77,#6b6f77) left bottom/100% 2px no-repeat}
+.train{position:absolute;bottom:2px;font-size:1.5rem;white-space:nowrap;transition:left 1.2s ease}
+.train i{font-style:normal;font-size:1rem;opacity:.7}
+.flip{display:inline-block;transform:scaleX(-1)}
+.flag{position:absolute;right:0;bottom:2px}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
 </style></head>
 <body><div id="app"></div>
 <script>
 const $=s=>document.querySelector(s),app=$('#app');
 const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
-const COL=['#a8442a','#3f6283','#9a7420','#4a7a62'],SH=['▲','◆','●','■'];
-let S=null,es=null,v=null,deadline=0,sent=-1;
+const COL=['#a8442a','#3f6283','#9a7420','#4a7a62'],SH=['⚙️','🔨','🚂','🏭'];
+let S=null,es=null,v=null,deadline=0,sent=-1,inved=-1,lastDeg=-90,prevPos={};
 const post=async(u,b)=>{const r=await fetch(u,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(b)});const j=await r.json();if(!r.ok)throw new Error(j.error||'Error');return j};
-const board=(n)=>v.players.slice(0,n).map((p,i)=>`<div class="lb ${S.role=='player'&&p.name==v.me?.name?'you':''}"><span>${['🥇','🥈','🥉'][i]||(i+1)+'.'} ${esc(p.name)}${p.streak>=3?' <small>🔥'+p.streak+'</small>':''}</span><span>${p.score}</span></div>`).join('');
+const RANKS=[[0,'🔩','Apprentice'],[2000,'🔨','Journeyman'],[5000,'📐','Foreman'],[9000,'⚙️','Engineer'],[14000,'🎩','Industrialist']];
+const rankOf=x=>RANKS.reduce((r,t,i)=>x>=t[0]?i:r,0),rankTxt=x=>RANKS[rankOf(x)][1]+' '+RANKS[rankOf(x)][2];
+const board=(n)=>v.players.slice(0,n).map((p,i)=>`<div class="lb ${S.role=='player'&&p.name==v.me?.name?'you':''}"><span>${['🥇','🥈','🥉'][i]||(i+1)+'.'} ${esc(p.name)}${p.streak>=3?' <small>♨️'+p.streak+'</small>':''}<br><small class="mut">${rankTxt(p.score)}</small></span><span>${p.score}</span></div>`).join('');
 
 try{S=JSON.parse(sessionStorage.getItem('quizzy'))}catch(e){}
 S?connect():home();
 
 function home(){
   if(es)es.close();sessionStorage.removeItem('quizzy');S=null;v=null;
-  app.innerHTML=`<h1>⚙️ Industrial Revolution</h1><div class="grid"><div class="card c"><h2>Host</h2><p class="mut">Write questions and run a live game.</p><button class="pri" id="h">Host a game</button></div>
+  app.innerHTML=`<h1><span class="gear">⚙️</span> Industrial Revolution</h1><div class="grid"><div class="card c"><h2>Host</h2><p class="mut">Write questions and run a live game.</p><button class="pri" id="h">Host a game</button></div>
   <div class="card c"><h2>Play</h2><p class="mut">Got a game PIN? Jump in.</p><button class="pri" id="j">Join a game</button></div></div>`;
   $('#h').onclick=()=>setup(draft());$('#j').onclick=joinForm;
 }
@@ -68,8 +96,8 @@ function draft(){try{const d=JSON.parse(localStorage.getItem('quizzy-draft'));if
   return [{q:'Which planet is closest to the Sun?',o:['Venus','Mercury','Mars','Earth'],c:1,s:20}]}
 const qCard=(q,i)=>`<div class="card qc"><div class="row"><b>Question ${i+1}</b><span class="sp"></span><select class="qs">${[10,20,30,60].map(s=>`<option value="${s}" ${s==q.s?'selected':''}>${s}s</option>`).join('')}</select>${i?`<button class="rm" data-i="${i}">Remove</button>`:''}</div>
 <input class="qt" placeholder="Type your question" value="${esc(q.q)}">
-${[0,1,2,3].map(k=>`<label class="opt" style="--c:${COL[k]}"><input type="radio" name="c${i}" value="${k}" ${k==q.c?'checked':''} title="Correct answer"><span>${SH[k]}</span><input class="qo" placeholder="Answer ${k+1}${k>1?' (optional)':''}" value="${esc(q.o[k]||'')}"></label>`).join('')}</div>`;
-const collect=()=>[...document.querySelectorAll('.qc')].map(d=>({q:d.querySelector('.qt').value.trim(),o:[...d.querySelectorAll('.qo')].map(x=>x.value.trim()),c:+(d.querySelector('input[type=radio]:checked')?.value??0),s:+d.querySelector('.qs').value}));
+${[0,1,2,3].map(k=>`<label class="opt" style="--c:${COL[k]}"><input type="radio" name="c${i}" value="${k}" ${k==q.c?'checked':''} title="Correct answer"><span>${SH[k]}</span><input class="qo" placeholder="Answer ${k+1}${k>1?' (optional)':''}" value="${esc(q.o[k]||'')}"></label>`).join('')}<label class="inl"><input type="checkbox" class="qi" ${q.inv?'checked':''}> 💰 Investment round: players wager points before seeing this question</label></div>`;
+const collect=()=>[...document.querySelectorAll('.qc')].map(d=>({q:d.querySelector('.qt').value.trim(),o:[...d.querySelectorAll('.qo')].map(x=>x.value.trim()),c:+(d.querySelector('input[type=radio]:checked')?.value??0),s:+d.querySelector('.qs').value,inv:d.querySelector('.qi').checked}));
 /*QL-START*/
 const QL_DELIMS={tab:'\t',comma:',',semi:';',dash:' - '};
 const qlStrip=s=>s.trim().replace(/^"(.*)"$/,'$1').trim();
@@ -131,7 +159,7 @@ function setup(qs,note){
     for(const [i,r] of raw.entries()){
       const idx=[0,1,2,3].filter(k=>r.o[k]);
       if(!r.q||idx.length<2||!r.o[r.c])return $('#err').textContent=`Question ${i+1}: add the question text, at least two answers, and mark a filled-in correct answer.`;
-      out.push({q:r.q,o:idx.map(k=>r.o[k]),c:idx.indexOf(r.c),s:r.s});
+      out.push({q:r.q,o:idx.map(k=>r.o[k]),c:idx.indexOf(r.c),s:r.s,inv:!!r.inv});
     }
     try{localStorage.setItem('quizzy-draft',JSON.stringify(raw))}catch(e){}
     try{const r=await post('/api/create',{questions:out});S={role:'host',pin:r.pin,token:r.token};connect()}
@@ -154,22 +182,39 @@ const optsView=(q,counts,correct,n)=>q.options.map((t,k)=>counts
   ?`<div class="bar ${k==correct?'':'x'}" style="--c:${COL[k]}"><span style="width:1.4em">${SH[k]}</span><i style="width:${Math.round(60*counts[k]/Math.max(1,n))+1}%"></i><span>${counts[k]} · ${esc(t)} ${k==correct?'✓':''}</span></div>`
   :`<div class="opt" style="--c:${COL[k]}"><span>${SH[k]}</span>${esc(t)}</div>`).join('');
 
+const PU=[['double','✖️2','Double Shift','Doubles your points if you answer correctly'],['telegraph','📡','Telegraph','Removes wrong answers'],['patent','📜','Patent','Protects your steam pressure from one wrong answer']];
+const steam='<div class="steam"><span>💨</span><span>💨</span><span>💨</span></div>';
+const gauge=n=>{const m=n>=3?Math.min(3,1+.5*(n-2)):1;return `<div class="gauge"><div class="dial"></div><div class="needle" data-p="${Math.min(n,6)}"></div><div class="hub"></div></div><div class="c gl">♨️ Steam pressure: ${n>=6?'FULL STEAM':n>=3?'rising':'building'} · ×${m}</div>`};
+const race=()=>{const ps=v.players.slice(0,8),mx=Math.max(2000,(ps[0]?ps[0].score:0)*1.1);
+  return `<div class="card"><b>🚂 The Race</b><div class="race">${ps.map(p=>{const to=Math.min(92,p.score/mx*92);return `<div class="rn">${esc(p.name)}</div><div class="track"><span class="flag">🏁</span><span class="train" data-n="${esc(p.name)}" data-to="${to}" style="left:${prevPos[p.name]||0}%">${p.streak>=3?'<i>💨</i>':''}<span class="flip">🚂</span></span></div>`}).join('')}</div></div>`};
+
 function hostView(){
   const n=v.players.length;
-  if(v.phase=='lobby')return `<div class="card c"><p class="mut">Players: open this site, choose “Join a game” and enter</p><div class="big">${v.pin}</div><div class="chips">${v.players.map(p=>`<span class="chip">${esc(p.name)}</span>`).join('')||'<span class="mut">Waiting for players…</span>'}</div><p class="mut"><small>Streak bonus: 3 correct in a row ×1.5, 4 ×2, 5 ×2.5, 6+ ×3. A wrong or missed answer resets it.</small></p></div><button class="pri" id="start" ${n?'':'disabled'}>Start (${n} player${n==1?'':'s'})</button>`;
-  if(v.phase=='question')return `<div class="row"><span class="mut">Question ${v.qi+1} of ${v.total}</span><span class="sp"></span><span class="timer" id="t"></span></div><div class="card"><h2>${esc(v.q.text)}</h2>${optsView(v.q)}</div><div class="row"><span class="mut">${v.answered} of ${n} answered</span><span class="sp"></span><button id="skip">Show results</button></div>`;
-  if(v.phase=='reveal')return `<div class="card"><h2>${esc(v.q.text)}</h2>${optsView(v.q,v.counts,v.correct,n)}</div><div class="card"><b>Leaderboard (top 5)</b>${board(5)}</div><button class="pri" id="next">${v.qi+1<v.total?'Next question':'Final results'}</button>`;
-  return `<h1>🏆 Final scoreboard</h1><div class="card"><b>Top 5</b>${board(5)}</div><button class="pri" id="home">Done</button>`;
+  if(v.phase=='lobby')return `<div class="card c"><p class="mut">Players: open this site, choose “Join a game” and enter</p><div class="big">${v.pin}</div><div class="chips">${v.players.map(p=>`<span class="chip">${esc(p.name)}</span>`).join('')||'<span class="mut">Waiting for players…</span>'}</div>
+  <p class="mut"><small>♨️ Steam pressure: 3 correct in a row ×1.5, 4 ×2, 5 ×2.5, 6+ ×3; a wrong answer vents the boiler. Each player gets one use of ✖️2 Double Shift, 📡 Telegraph and 📜 Patent. 💰 Investment rounds let players wager points before the question.</small></p></div><button class="pri" id="start" ${n?'':'disabled'}>Start (${n} player${n==1?'':'s'})</button>`;
+  if(v.phase=='invest')return `<div class="card c"><h2>💰 Investment round!</h2><p class="mut">Players are placing their wagers. A correct answer wins the wager, a wrong one loses it.</p><div class="timer" id="t"></div><p class="mut">${v.invested} of ${n} locked in</p></div><button class="pri" id="begin">Start question now</button>`;
+  if(v.phase=='question')return `<div class="row"><span class="mut">Question ${v.qi+1} of ${v.total}${v.invRound?' · 💰 Investment round':''}</span><span class="sp"></span><span class="timer" id="t"></span></div><div class="card"><h2>${esc(v.q.text)}</h2>${optsView(v.q)}</div><div class="row"><span class="mut">${v.answered} of ${n} answered</span><span class="sp"></span><button id="skip">Show results</button></div>`;
+  if(v.phase=='reveal')return `<div class="card">${steam}<h2>${esc(v.q.text)}</h2>${optsView(v.q,v.counts,v.correct,n)}</div>${race()}<div class="card"><b>Leaderboard (top 5)</b>${board(5)}</div><button class="pri" id="next">${v.qi+1<v.total?'Next question':'Final results'}</button>`;
+  return `<h1>🏆 Captains of Industry</h1><div class="card"><b>Top 5</b>${board(5)}</div>${race()}<button class="pri" id="home">Done</button>`;
 }
 function playerView(){
   const me=v.me;if(!me)return '<div class="card c">Joining…</div>';
-  if(v.phase=='lobby')return `<div class="card c"><h2>You’re in, ${esc(me.name)}!</h2><p class="mut">Waiting for the host to start…</p></div>`;
+  if(v.phase=='lobby')return `<div class="card c"><h2>You’re in, ${esc(me.name)}!</h2><p>${rankTxt(me.score)}</p><p class="mut">Waiting for the host to start…</p></div>`;
+  if(v.phase=='invest'){const sc=me.score;
+    return `<div class="card c"><h2>💰 Investment round</h2><p class="mut">You have ${sc} points. Wager some before the question appears: right wins the wager, wrong or no answer loses it.</p><div class="timer" id="t"></div>${me.chose?`<div class="res">Wager locked: ${me.wager}</div>`:`<div class="grid">${[0,25,50,100].map(x=>`<button class="ans inv" data-pct="${x}" style="--c:#3f6283"><b>${x?Math.floor(sc*x/100/10)*10:'Pass'}</b>${x?x+'% of your points':'no risk'}</button>`).join('')}</div>`}</div>`}
   if(v.phase=='question'){
-    if(me.answered||sent==v.qi)return `<div class="card c"><div class="res">✔ Answer locked in</div><p class="mut">Waiting for the results…</p></div>`;
-    return `<div class="row"><span class="mut">Question ${v.qi+1} of ${v.total}</span>${me.streak>=1?`<span class="chip">🔥 ${me.streak} in a row${me.streak>=2?' — next one is bonus!':''}</span>`:''}<span class="sp"></span><span class="timer" id="t"></span></div><div class="card"><h2>${esc(v.q.text)}</h2></div><div class="grid">${v.q.options.map((t,k)=>`<button class="ans" style="--c:${COL[k]}" data-k="${k}"><b>${SH[k]}</b>${esc(t)}</button>`).join('')}</div>`;
+    const pu=`<div class="pu">${PU.map(([k,e,nm,tip])=>`<button class="pub ${me.active==k?'on':''}" data-pu="${k}" title="${tip}" ${me.used[k]||me.active||me.answered?'disabled':''}>${e}<br>${nm}${me.active==k?' ✓':me.used[k]?' (used)':''}</button>`).join('')}</div>`;
+    if(me.answered||sent==v.qi)return `<div class="card c"><div class="res">✔ Answer locked in</div><p class="mut">Waiting for the results…</p>${gauge(me.streak)}</div>`;
+    return `<div class="row"><span class="mut">Question ${v.qi+1} of ${v.total}</span>${v.invRound&&me.wager?`<span class="chip">💰 ${me.wager} at stake</span>`:''}<span class="sp"></span><span class="timer" id="t"></span></div><div class="card"><h2>${esc(v.q.text)}</h2>${gauge(me.streak)}</div>${pu}<div class="grid">${v.q.options.map((t,k)=>me.hidden.includes(k)?'<div></div>':`<button class="ans" style="--c:${COL[k]}" data-k="${k}"><b>${SH[k]}</b>${esc(t)}</button>`).join('')}</div>`;
   }
-  if(v.phase=='reveal')return `<div class="card c"><div class="res">${me.correct?'✅ Correct!':me.answered?'❌ Not quite':'⏰ Too slow'}</div>${me.correct?`<p>+${me.points} points${me.mult>1?` <b>🔥 ×${me.mult} streak bonus</b> (${me.streak} in a row)`:me.streak==2?' — one more for a streak bonus!':''}</p>`:`<p class="mut">Answer: ${esc(v.q.options[v.correct])}</p>`}<p><b>${me.score}</b> points · rank <b>#${me.rank}</b> of ${v.players.length}</p></div>`;
-  return `<div class="card c"><h2>Game over</h2><div class="res">#${me.rank} of ${v.players.length}</div><p>${me.score} points</p></div><div class="card"><b>Top 5</b>${board(5)}</div><button class="pri" id="home">Leave</button>`;
+  if(v.phase=='reveal'){const f=me.fx||{},L=[];
+    if(me.correct){L.push(`+${me.points} points`);if(f.mult>1)L.push(`♨️ ×${f.mult} steam pressure`);if(f.dbl)L.push('✖️2 Double Shift')}
+    else if(f.saved)L.push('📜 Patent held your steam pressure');
+    else if(f.lost>=1)L.push(`💨 Boiler vented: lost ${f.lost} in a row`);
+    if(f.inv)L.push(`💰 Investment ${f.inv>0?'+':'−'}${Math.abs(f.inv)}`);
+    const up=rankOf(me.score)>rankOf(f.before||0)?`<p class="res">🎉 Promoted to ${rankTxt(me.score)}!</p>`:'';
+    return `<div class="card c">${steam}<div class="res">${me.correct?'✅ Correct!':me.answered?'❌ Not quite':'⏰ Too slow'}</div>${me.correct?'':`<p class="mut">Answer: ${esc(v.q.options[v.correct])}</p>`}${L.map(x=>`<p>${x}</p>`).join('')}${up}<p><b>${me.score}</b> points · rank <b>#${me.rank}</b> of ${v.players.length} · ${rankTxt(me.score)}</p>${gauge(me.streak)}</div>`}
+  return `<div class="card c"><h2>Game over</h2><div class="res">#${me.rank} of ${v.players.length}</div><p>${me.score} points · ${rankTxt(me.score)}</p></div><div class="card"><b>Top 5</b>${board(5)}</div><button class="pri" id="home">Leave</button>`;
 }
 function render(){
   if(!v)return;
@@ -179,13 +224,23 @@ function render(){
   $('#start')&&($('#start').onclick=act('start'));
   $('#skip')&&($('#skip').onclick=act('reveal'));
   $('#next')&&($('#next').onclick=act('next'));
+  $('#begin')&&($('#begin').onclick=act('begin'));
   $('#home')&&($('#home').onclick=home);
-  document.querySelectorAll('.ans').forEach(b=>b.onclick=()=>{
+  document.querySelectorAll('.ans[data-k]').forEach(b=>b.onclick=()=>{
     sent=v.qi;document.querySelectorAll('.ans').forEach(x=>x.disabled=true);
     post('/api/answer',{pin:S.pin,id:S.id,choice:+b.dataset.k}).catch(()=>{});
   });
+  document.querySelectorAll('.inv').forEach(b=>b.onclick=()=>{
+    inved=v.qi;document.querySelectorAll('.inv').forEach(x=>x.disabled=true);
+    post('/api/invest',{pin:S.pin,id:S.id,pct:+b.dataset.pct}).catch(()=>{});
+  });
+  document.querySelectorAll('.pub').forEach(b=>b.onclick=()=>post('/api/powerup',{pin:S.pin,id:S.id,type:b.dataset.pu}).catch(()=>{}));
+  document.querySelectorAll('.needle').forEach(el=>{const to=-90+180*el.dataset.p/6;el.style.transform=`rotate(${lastDeg}deg)`;lastDeg=to;
+    requestAnimationFrame(()=>requestAnimationFrame(()=>{el.style.transform=`rotate(${to}deg)`}))});
+  document.querySelectorAll('.train').forEach(el=>{const to=+el.dataset.to;prevPos[el.dataset.n]=to;
+    requestAnimationFrame(()=>requestAnimationFrame(()=>{el.style.left=to+'%'}))});
   tick();
 }
-function tick(){const el=$('#t');if(el&&v&&v.phase=='question')el.textContent=Math.max(0,Math.ceil((deadline-Date.now())/1000))}
+function tick(){const el=$('#t');if(el&&v&&(v.phase=='question'||v.phase=='invest'))el.textContent=Math.max(0,Math.ceil((deadline-Date.now())/1000))}
 setInterval(tick,250);
 </script></body></html>
