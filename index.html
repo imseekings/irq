@@ -3,52 +3,58 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Industrial Revolution</title>
 <style>
-:root{--bg:#16181b;--card:#25282d;--ink:#e8e6e1;--mut:#9a9890;--line:#3a3d42;--pri:#b9651f;--acc:#f0a244;color-scheme:dark}
+:root{--bg:#1b1713;--ink:#f0e6cf;--mut:#a89b7e;--line:#4a3f2e;--pri:#b9651f;--acc:#e8b04a;--rv:#f1cf86 0 1.5px,#c99a3e 2.5px,#6b4a18 4px,#1a1208 5px,transparent 5.6px;color-scheme:dark}
 *{box-sizing:border-box}
-body{margin:0;color:var(--ink);font:16px/1.4 system-ui,-apple-system,"Segoe UI",sans-serif;background-color:var(--bg);background-image:linear-gradient(rgba(90,130,170,.08) 1px,transparent 1px),linear-gradient(90deg,rgba(90,130,170,.08) 1px,transparent 1px);background-size:28px 28px}
+body{margin:0;color:var(--ink);font:16px/1.45 Georgia,"Times New Roman",serif;background-color:var(--bg)}
+body::before{content:"";position:fixed;inset:-96px;z-index:-1;pointer-events:none;background-image:linear-gradient(rgba(184,134,43,.08) 2px,transparent 2px),linear-gradient(90deg,rgba(184,134,43,.08) 2px,transparent 2px);background-size:96px 96px;animation:drift 18s linear infinite}
+@keyframes drift{to{transform:translate(96px,96px)}}
 #app{max-width:720px;margin:0 auto;padding:20px 16px 48px}
-h1,h2,.big,.timer,.res{font-family:Rockwell,"Rockwell Nova","Roboto Slab","Courier New",serif;letter-spacing:.02em}
-h1{font-size:1.6rem;margin:.2em 0 .6em}
-.card{position:relative;background:linear-gradient(#2b2e34,#22252a);border:2px solid #44484f;border-radius:10px;padding:20px 16px 16px;margin:0 0 14px;box-shadow:inset 0 0 0 1px #15171a,0 3px 0 #101214}
-.card::before,.card::after{content:"";position:absolute;top:6px;width:7px;height:7px;border-radius:50%;background:radial-gradient(circle at 35% 35%,#9a9ea6,#4a4d54)}
-.card::before{left:7px}.card::after{right:7px}
+h1,h2,.big,.res{font-family:Rockwell,"Rockwell Nova","Roboto Slab",Georgia,serif;letter-spacing:.03em}
+h1{font-size:1.7rem;margin:.2em 0 .6em;color:var(--acc);text-transform:uppercase;letter-spacing:.14em;text-shadow:-1px -1px 0 rgba(255,235,170,.45),1px 2px 0 #000}
+h2{color:#f6e9c8;text-shadow:1px 1px 0 #000}
+.stamp{text-align:center;text-transform:uppercase;letter-spacing:.3em;font-size:.8rem;color:var(--acc);text-shadow:-1px -1px 0 rgba(255,235,170,.35),1px 1px 0 #000}
+.card>b{display:block;text-transform:uppercase;letter-spacing:.16em;font-size:.82rem;color:var(--acc);text-shadow:-1px -1px 0 rgba(255,235,170,.35),1px 1px 0 #000;border-bottom:1px solid #5a3f14;padding-bottom:6px;margin-bottom:6px}
+.card{position:relative;border-radius:0;border:7px solid;border-color:#e8c06a #7a5518 #6b4a18 #c99a3e;padding:28px 26px 24px;margin:0 0 16px;
+background:radial-gradient(circle at 17px 17px,var(--rv)),radial-gradient(circle at calc(100% - 17px) 17px,var(--rv)),radial-gradient(circle at 17px calc(100% - 17px),var(--rv)),radial-gradient(circle at calc(100% - 17px) calc(100% - 17px),var(--rv)),radial-gradient(circle at 17px 50%,var(--rv)),radial-gradient(circle at calc(100% - 17px) 50%,var(--rv)),linear-gradient(#25201a,#16120e);
+box-shadow:inset 0 0 0 2px #3a2a12,inset 0 0 0 4px #c99a3e,inset 0 0 16px rgba(0,0,0,.7),0 4px 0 #0e0b08}
 .gear{display:inline-block;animation:spin 9s linear infinite}
 @keyframes spin{to{transform:rotate(360deg)}}
 .row{display:flex;gap:8px;align-items:center;flex-wrap:wrap}.sp{flex:1}
 button,select,input,textarea{font:inherit;color:inherit}
-button{border:0;border-radius:8px;padding:11px 18px;cursor:pointer;font-weight:600;background:#3a3d42;border-bottom:3px solid #1d1f22}
-button.pri{background:var(--pri);color:#fff}
+button{border:2px solid;border-color:#a98542 #5a3f14 #4a3310 #8f6f35;border-radius:0;padding:11px 18px;cursor:pointer;font-weight:700;letter-spacing:.06em;text-transform:uppercase;font-size:.9rem;background:linear-gradient(#5b4b35,#43372a);text-shadow:0 1px 0 #000}
+button:active:not(:disabled){transform:translateY(1px)}
+button.pri,.pub.on{background:linear-gradient(#cf7a2b,#8f4a17);border-color:#f0b870 #6e3510 #5a2a0c #d9954a;color:#fff4dc}
 button:disabled{opacity:.45;cursor:default}
-input:not([type=radio]):not([type=checkbox]),select,textarea{width:100%;padding:10px 12px;border:1px solid var(--line);border-radius:8px;background:#1b1d20}
+input:not([type=radio]):not([type=checkbox]),select,textarea{width:100%;padding:10px 12px;border:2px solid;border-color:#3a2a12 #8f6f35 #8f6f35 #3a2a12;border-radius:0;background:#100d0a}
 select{width:auto}
 summary{cursor:pointer}
-.qt{margin:10px 0;font-weight:600}
+.qt{margin:10px 0;font-weight:700}
 .inl{display:block;margin-top:8px;color:var(--mut);font-size:.9rem}
-.opt{display:flex;align-items:center;gap:8px;margin:6px 0;padding:6px 8px;border-left:6px solid var(--c);border-radius:6px}
+.opt{display:flex;align-items:center;gap:8px;margin:6px 0;padding:6px 8px;border-left:6px solid var(--c);border-radius:0}
 .opt>span{width:1.4em}
-.big{font-size:3.4rem;font-weight:800;letter-spacing:.15em;text-align:center;margin:8px 0}
+.big{font-size:3.4rem;font-weight:800;letter-spacing:.15em;text-align:center;margin:4px 0 8px;color:var(--acc);text-shadow:-1px -1px 0 rgba(255,235,170,.45),2px 3px 0 #000}
 .mut{color:var(--mut)}.c{text-align:center}
 .chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
-.chip{background:#3a3d42;border-radius:99px;padding:6px 14px;font-weight:600}
+.chip{background:#4a3f2e;border:2px solid;border-color:#a98542 #5a3f14 #4a3310 #8f6f35;border-radius:0;padding:5px 12px;font-weight:700}
 .grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
-.ans{background:var(--c);color:#fff;min-height:96px;font-size:1.1rem;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;text-align:center;border-bottom:5px solid rgba(0,0,0,.4)}
+.ans{background:linear-gradient(rgba(255,235,190,.18),rgba(0,0,0,.22)),var(--c);color:#fff4dc;min-height:96px;font-size:1.1rem;text-transform:none;letter-spacing:.02em;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;text-align:center;border:0;border-radius:0;border-bottom:5px solid rgba(0,0,0,.45);box-shadow:inset 0 0 0 2px rgba(240,200,120,.4)}
 .ans b{font-size:1.8rem}
 .bar{display:flex;align-items:center;gap:8px;margin:8px 0}
-.bar i{display:block;height:30px;min-width:4px;background:var(--c);border-radius:4px}
+.bar i{display:block;height:30px;min-width:4px;background:linear-gradient(rgba(255,235,190,.2),rgba(0,0,0,.2)),var(--c);border-radius:0}
 .bar.x{opacity:.45}
-.timer{font-size:2rem;font-weight:800;color:var(--acc)}
+.timer{display:inline-block;min-width:64px;text-align:center;font:800 1.8rem "Courier New",monospace;color:var(--acc);background:#120e0a;border:3px solid #b8862b;border-radius:0;padding:0 12px;text-shadow:0 0 8px rgba(232,176,74,.55)}
 .lb{display:flex;justify-content:space-between;align-items:center;padding:9px 4px;border-bottom:1px solid var(--line)}
 .lb:last-child{border:0}.you{color:var(--acc);font-weight:700}
 .res{font-size:2rem;font-weight:800;text-align:center;margin:12px 0}
-.err{color:#e0698f;margin:8px 0}
-.gauge{position:relative;width:150px;height:75px;margin:6px auto 0;overflow:hidden}
-.dial{width:150px;height:150px;border-radius:50%;background:conic-gradient(from 270deg,#4a7a62 0 60deg,#9a7420 60deg 120deg,#a8442a 120deg 180deg,transparent 180deg);-webkit-mask:radial-gradient(circle,transparent 46px,#000 47px);mask:radial-gradient(circle,transparent 46px,#000 47px)}
-.needle{position:absolute;left:50%;bottom:0;width:4px;height:62px;margin-left:-2px;background:var(--ink);border-radius:2px;transform-origin:50% 100%;transform:rotate(-90deg);transition:transform .9s cubic-bezier(.3,1.5,.5,1)}
-.hub{position:absolute;left:50%;bottom:-9px;width:18px;height:18px;margin-left:-9px;border-radius:50%;background:#9a9ea6}
-.gl{font-size:.9rem;margin:8px 0}
+.err{color:#e58a6a;margin:8px 0}
+.gauge{position:relative;width:162px;height:81px;margin:6px auto 0;overflow:hidden;border-radius:81px 81px 0 0;border:6px solid #b8862b;border-bottom:0;background:#e8dcb5;box-shadow:0 0 0 2px #5a3f14}
+.dial{width:150px;height:150px;border-radius:50%;background:conic-gradient(from 270deg,#3f7a56 0 60deg,#c98a1a 60deg 120deg,#9b2f23 120deg 180deg,transparent 180deg);-webkit-mask:radial-gradient(circle,transparent 46px,#000 47px);mask:radial-gradient(circle,transparent 46px,#000 47px)}
+.gauge::after{content:"";position:absolute;left:0;top:0;width:150px;height:150px;border-radius:50%;background:repeating-conic-gradient(from 268.5deg,#2a1d12 0 3deg,transparent 3deg 30deg);-webkit-mask:radial-gradient(circle,transparent 36px,#000 37px,#000 45px,transparent 46px);mask:radial-gradient(circle,transparent 36px,#000 37px,#000 45px,transparent 46px)}
+.needle{position:absolute;left:50%;bottom:0;width:4px;height:60px;margin-left:-2px;background:linear-gradient(#2a1d12,#7a2a14);border-radius:2px;transform-origin:50% 100%;transform:rotate(-90deg);transition:transform .9s cubic-bezier(.3,1.5,.5,1);z-index:2}
+.hub{position:absolute;left:50%;bottom:-9px;width:18px;height:18px;margin-left:-9px;border-radius:50%;background:radial-gradient(circle at 35% 35%,#f1cf86,#8a6224);z-index:3}
+.gl{font-size:.9rem;margin:8px 0;color:var(--acc)}
 .pu{display:flex;gap:8px;margin:10px 0}
 .pub{flex:1;font-size:.85rem;padding:8px 4px}
-.pub.on{background:var(--pri);color:#fff}
 .pub:disabled:not(.on){opacity:.35}
 .steam{position:relative;height:0}
 .steam span{position:absolute;bottom:0;font-size:1.6rem;opacity:0;animation:puff 2.6s ease-out infinite}
@@ -56,18 +62,18 @@ summary{cursor:pointer}
 @keyframes puff{0%{transform:translateY(0) scale(.6);opacity:0}30%{opacity:.8}100%{transform:translateY(-70px) scale(1.5);opacity:0}}
 .race{display:grid;grid-template-columns:84px 1fr;gap:8px;align-items:end;margin-top:10px}
 .rn{font-size:.85rem;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.track{position:relative;height:34px;background:repeating-linear-gradient(90deg,#5a5e66 0 3px,transparent 3px 14px) left bottom/100% 6px no-repeat,linear-gradient(#6b6f77,#6b6f77) left bottom/100% 2px no-repeat}
-.train{position:absolute;bottom:2px;font-size:1.5rem;white-space:nowrap;transition:left 1.2s ease}
-.train i{font-style:normal;font-size:1rem;opacity:.7}
+.track{position:relative;height:34px;background:linear-gradient(#b0b3b8,#b0b3b8) left bottom/100% 2px no-repeat,repeating-linear-gradient(90deg,#6b4a2a 0 5px,transparent 5px 14px) left bottom/100% 5px no-repeat}
+.train{position:absolute;bottom:3px;font-size:1.5rem;white-space:nowrap;transition:left 1.2s ease}
+.train i{font-style:normal;font-size:1rem;opacity:.75}
 .flip{display:inline-block;transform:scaleX(-1)}
-.flag{position:absolute;right:0;bottom:2px}
+.flag{position:absolute;right:0;bottom:3px}
 @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
 </style></head>
 <body><div id="app"></div>
 <script>
 const $=s=>document.querySelector(s),app=$('#app');
 const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
-const COL=['#a8442a','#3f6283','#9a7420','#4a7a62'],SH=['⚙️','🔨','🚂','🏭'];
+const COL=['#9b2f23','#2f5873','#8f6a12','#2f6b4a'],SH=['⚙️','🔨','🚂','🏭'];
 let S=null,es=null,v=null,deadline=0,sent=-1,inved=-1,lastDeg=-90,prevPos={};
 const post=async(u,b)=>{const r=await fetch(u,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(b)});const j=await r.json();if(!r.ok)throw new Error(j.error||'Error');return j};
 const RANKS=[[0,'🔩','Apprentice'],[2000,'🔨','Journeyman'],[5000,'📐','Foreman'],[9000,'⚙️','Engineer'],[14000,'🎩','Industrialist']];
@@ -190,7 +196,7 @@ const race=()=>{const ps=v.players.slice(0,8),mx=Math.max(2000,(ps[0]?ps[0].scor
 
 function hostView(){
   const n=v.players.length;
-  if(v.phase=='lobby')return `<div class="card c"><p class="mut">Players: open this site, choose “Join a game” and enter</p><div class="big">${v.pin}</div><div class="chips">${v.players.map(p=>`<span class="chip">${esc(p.name)}</span>`).join('')||'<span class="mut">Waiting for players…</span>'}</div>
+  if(v.phase=='lobby')return `<div class="card c"><p class="mut">Players: open this site, choose “Join a game” and enter</p><div class="stamp">Engine No.</div><div class="big">${v.pin}</div><div class="chips">${v.players.map(p=>`<span class="chip">${esc(p.name)}</span>`).join('')||'<span class="mut">Waiting for players…</span>'}</div>
   <p class="mut"><small>♨️ Steam pressure: 3 correct in a row ×1.5, 4 ×2, 5 ×2.5, 6+ ×3; a wrong answer vents the boiler. Each player gets one use of ✖️2 Double Shift, 📡 Telegraph and 📜 Patent. 💰 Investment rounds let players wager points before the question.</small></p></div><button class="pri" id="start" ${n?'':'disabled'}>Start (${n} player${n==1?'':'s'})</button>`;
   if(v.phase=='invest')return `<div class="card c"><h2>💰 Investment round!</h2><p class="mut">Players are placing their wagers. A correct answer wins the wager, a wrong one loses it.</p><div class="timer" id="t"></div><p class="mut">${v.invested} of ${n} locked in</p></div><button class="pri" id="begin">Start question now</button>`;
   if(v.phase=='question')return `<div class="row"><span class="mut">Question ${v.qi+1} of ${v.total}${v.invRound?' · 💰 Investment round':''}</span><span class="sp"></span><span class="timer" id="t"></span></div><div class="card"><h2>${esc(v.q.text)}</h2>${optsView(v.q)}</div><div class="row"><span class="mut">${v.answered} of ${n} answered</span><span class="sp"></span><button id="skip">Show results</button></div>`;
@@ -201,7 +207,7 @@ function playerView(){
   const me=v.me;if(!me)return '<div class="card c">Joining…</div>';
   if(v.phase=='lobby')return `<div class="card c"><h2>You’re in, ${esc(me.name)}!</h2><p>${rankTxt(me.score)}</p><p class="mut">Waiting for the host to start…</p></div>`;
   if(v.phase=='invest'){const sc=me.score;
-    return `<div class="card c"><h2>💰 Investment round</h2><p class="mut">You have ${sc} points. Wager some before the question appears: right wins the wager, wrong or no answer loses it.</p><div class="timer" id="t"></div>${me.chose?`<div class="res">Wager locked: ${me.wager}</div>`:`<div class="grid">${[0,25,50,100].map(x=>`<button class="ans inv" data-pct="${x}" style="--c:#3f6283"><b>${x?Math.floor(sc*x/100/10)*10:'Pass'}</b>${x?x+'% of your points':'no risk'}</button>`).join('')}</div>`}</div>`}
+    return `<div class="card c"><h2>💰 Investment round</h2><p class="mut">You have ${sc} points. Wager some before the question appears: right wins the wager, wrong or no answer loses it.</p><div class="timer" id="t"></div>${me.chose?`<div class="res">Wager locked: ${me.wager}</div>`:`<div class="grid">${[0,25,50,100].map(x=>`<button class="ans inv" data-pct="${x}" style="--c:#2f5873"><b>${x?Math.floor(sc*x/100/10)*10:'Pass'}</b>${x?x+'% of your points':'no risk'}</button>`).join('')}</div>`}</div>`}
   if(v.phase=='question'){
     const pu=`<div class="pu">${PU.map(([k,e,nm,tip])=>`<button class="pub ${me.active==k?'on':''}" data-pu="${k}" title="${tip}" ${me.used[k]||me.active||me.answered?'disabled':''}>${e}<br>${nm}${me.active==k?' ✓':me.used[k]?' (used)':''}</button>`).join('')}</div>`;
     if(me.answered||sent==v.qi)return `<div class="card c"><div class="res">✔ Answer locked in</div><p class="mut">Waiting for the results…</p>${gauge(me.streak)}</div>`;
